@@ -3,31 +3,35 @@
     <GameTimer 
       :currentTime='currentTime' 
     />
-    <PuzzleBoard 
-      :completeBoard="completeBoard"
+    <SudokuBoard 
+      :completeBoard="completedBoard"
+      :gameBoard="gameHistory.gameHistory[ gameHistory.gameHistory.length - 1]"
       :initialBoard="initialBoard"
       :activeValue="activeValue"
       :editBoard="editBoard"
       :toggleActive="toggleActive"
     />
-    <PuzzleControls
+    <SudokuControls
       :activeValue="activeValue"
       :toggleActive="toggleActive"
+      :handleBack="gameHistory.back"
+      :handleNext="gameHistory.next"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 
-  import { SudokuBoardType } from "../../types/SudokuTypes";
+  import { SudokuBoardType, SudokuCellType } from "../../types/SudokuTypes";
   import countNInBoard from "../../utils/countNInBoard";
   import validateGameBoard from "../../utils/validateGameBoard";
   import GameTimer from "../GameTimer.vue"
-  import PuzzleBoard from "./SudokuBoard.vue";
-  import PuzzleControls from "./SudokuToolbar.vue";
-  import { ref, onMounted, onBeforeUnmount } from 'vue'
+  import SudokuBoard from "./SudokuBoard.vue";
+  import SudokuControls from "./SudokuToolbar.vue";
+  import { ref, onMounted, onBeforeUnmount, reactive } from 'vue'
+  import useHistory from "../../ts/useHistory";
 
-  const completeBoard = ref<number[][]>([
+  const completedBoard:SudokuBoardType = [
     [8, 0, 0, 0, 6, 0, 0, 0, 4],
     [0, 1, 0, 7, 0, 4, 0, 6, 0],
     [0, 0, 6, 5, 1, 2, 7, 0, 0],
@@ -37,7 +41,7 @@
     [0, 0, 4, 1, 5, 7, 3, 0, 0],
     [0, 5, 0, 3, 0, 6, 0, 7, 0],
     [7, 0, 0, 0, 2, 0, 0, 0, 1],
-  ],)
+  ]
 
   const initialBoard:SudokuBoardType = [
     [8, 0, 0, 0, 6, 0, 0, 0, 4],
@@ -51,18 +55,33 @@
     [7, 0, 0, 0, 2, 0, 0, 0, 1],
   ]
 
-  const activeValue = ref<number>(0);
+  const gameHistory = useHistory<SudokuBoardType>([[
+    [8, 0, 0, 0, 6, 0, 0, 0, 4],
+    [0, 1, 0, 7, 0, 4, 0, 6, 0],
+    [0, 0, 6, 5, 1, 2, 7, 0, 0],
+    [0, 2, 7, 0, 0, 0, 8, 4, 0],
+    [4, 0, 5, 0, 7, 0, 1, 0, 6],
+    [0, 6, 8, 0, 0, 0, 9, 3, 0],
+    [0, 0, 4, 1, 5, 7, 3, 0, 0],
+    [0, 5, 0, 3, 0, 6, 0, 7, 0],
+    [7, 0, 0, 0, 2, 0, 0, 0, 1],
+  ]])
+
+  const activeValue = ref<SudokuCellType>(0);
   const currentTime = ref<number>(0);
 
-  let timerId: number = 0;
+  let timerId:  NodeJS.Timer | null = null;
   let completeTime = ref<number>(0)
 
-  function editBoard(position: number[], newValue:number):void {
-    completeBoard.value[position[0]][position[1]] = newValue;
+  function editBoard(position: number[], newValue:SudokuCellType):void {
+    const newRegister = gameHistory.gameHistory[ gameHistory.gameHistory.length - 1].map(row => [...row]);
+    newRegister[position[0]][position[1]] = newValue;
+    gameHistory.register(newRegister)
+    console.log(gameHistory.readAll())
   }
 
   function startTimer():void {
-    if (validateGameBoard(completeBoard.value)) {
+    if (validateGameBoard(gameHistory.getLastRegister())) {
       stopTimer();
     } else {
       currentTime.value++;
@@ -73,8 +92,8 @@
     completeTime.value = currentTime.value;
   }
 
-  function toggleActive(input: number) {
-    return countNInBoard(input, completeBoard.value) >= 9
+  function toggleActive(input: SudokuCellType) {
+    return countNInBoard(input, gameHistory.getLastRegister()) >= 9
       ? (activeValue.value = 0)
       : (activeValue.value = input);
   }
@@ -103,9 +122,9 @@
     timerId = setInterval(startTimer, 1000);
   }) 
 
-  onBeforeUnmount(() => {
-    clearInterval(timerId)
-  })
+  // onBeforeUnmount(() => {
+  //   clearInterval(timerId)
+  // })
 
 </script>
 
@@ -113,6 +132,7 @@
 .sudoku_container {
   width: 100%;
   padding: 2.5rem;
+  gap: 2rem;
   display: flex;
   justify-content: space-around;
   align-items: center;

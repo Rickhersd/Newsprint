@@ -1,6 +1,6 @@
-import { SudokuBoardType, SudokuRowType } from "../types/SudokuTypes";
+import { SudokuBoard, SudokuRowType } from "../types/SudokuTypes";
 
-const defineBoxes = (sudokuBoard: SudokuBoardType) => {
+const defineBoxes = (sudokuBoard: SudokuBoard) => {
   
   const arrayOfBoxes:SudokuRowType[] = [];
 

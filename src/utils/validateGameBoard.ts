@@ -2,9 +2,9 @@ import validateArray from "./validateArray";
 import checkBoardSize from "./checkBoardSize";
 import defineColumns from "./defineColumns";
 import defineBoxes from "./defineBoxes";
-import { SudokuBoardType } from "../types/SudokuTypes";
+import { SudokuBoard } from "../types/SudokuTypes";
 
-const validateGameBoard = (boardArray: SudokuBoardType) => {
+const validateGameBoard = (boardArray: SudokuBoard) => {
   let isValid = checkBoardSize(boardArray);
 
   // Use helper functions to define columns and boxes

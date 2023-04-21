@@ -1,34 +1,26 @@
 <template>
   <div class="sudoku-toolbar">
     <div class="sudoku-toolbar__tools">
-      <div class="sudoky-toolbar__tools-history">
-        <button class="sudoku-toolbar__tools-btn " @click="handleBack">
-          <v-icon icon="mdi-arrow-u-left-top"></v-icon>
-        </button>
-        <button class="sudoku-toolbar__tools-btn " @click="handleBack">
-          <v-icon icon="mdi-arrow-u-left-top"></v-icon>
-        </button>
-      </div>
-      <button class="sudoku-toolbar__tools-btn"  @click="handleNext">
+      <button class="sudoku-toolbar__tools-btn">
+        <v-icon icon="mdi-arrow-u-left-top"></v-icon>
+      </button>
+      <button class="sudoku-toolbar__tools-btn">
         <v-icon icon="mdi-eraser"></v-icon>
       </button>
       <button class="sudoku-toolbar__tools-btn">
         <v-icon icon="mdi-lightbulb-on-outline"></v-icon>
       </button>
     </div>
-    <SudokuNumberSelector :activeValue="activeValue" :toggleActive="toggleActive" />
+    <NonogramFillSelector :activeOption="activeValue" :toggleActive="toggleActive" />
   </div>
 </template>
 
 <script lang="ts" setup>
-  import SudokuNumberSelector from "./SudokuNumberSelector.vue";
-  import { SudokuCellType } from "../../types/SudokuTypes";
+  import NonogramFillSelector from "./NonogramFillSelector.vue";
 
   defineProps<{
-    activeValue: SudokuCellType,
-    toggleActive: (number:SudokuCellType) => void,
-    handleBack: () => void,
-    handleNext: () => void,
+    activeValue: -1 | 0 | 1,
+    toggleActive: (number:-1 | 0 | 1) => void,
   }>()
   
 </script>
@@ -47,14 +39,9 @@
 
   &__tools {
 
-    &-history{
-      background-color: var(--i-secundary-color);
-    }
 
     &-btn {
-      width: 40px;
-      height: 40px;
-      background-color: var(--i-secundary-color);
+      
     }
   }
 }
@@ -89,6 +76,4 @@
     width: 400px;
   }
 }
-
-
 </style>

@@ -1,7 +1,7 @@
-import { SudokuBoardType } from "../types/SudokuTypes";
+import { SudokuBoard } from "../types/SudokuTypes";
 import checkRowLength from "./checkRowLenght";
 
-const checkBoardSize = (board: SudokuBoardType) => {
+const checkBoardSize = (board: SudokuBoard) => {
   if (board.length !== 9) return false;
 
   let isValid = true;

@@ -1,33 +1,44 @@
 <template>
-  <div class="number-selector">
+  <div class="fill-selector">
     <button
-      class="number-selector_button"
-      v-for="number in numbers"
-      :key="number"
-      @click="() => toggleActive(number)"
+      class="fill-selector__button"
+      v-for="option in fillOptions"
+      :key="option.value"
+      @click="() => toggleActive(option.value)"
     >
-      <p v-if="activeValue === number" class="number-selector_button-selected">
-        {{ numbers[number - 1] }}
+      <p v-if="activeOption === option.value" class="fill-selector__button-selected">
+        {{ option.label }}
       </p>
-      <p v-else>{{ numbers[number - 1] }}</p>
+      <p v-else>
+        {{ option.label }}
+      </p>
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { SudokuCellType } from '../../types/SudokuTypes';
+  import { ref } from 'vue';
   
-  const numbers:SudokuCellType[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  type fillOption = { 
+    value: -1 | 0 | 1;
+    label: string;  
+  }
+
+  const fillOptions:fillOption[] = [
+    {value: -1, label: 'X'},
+    {value: 0, label: 'Erase'},
+    {value: 1, label: 'Fill'}
+  ]
 
   defineProps<{
-    activeValue: SudokuCellType,
-    toggleActive: (newActive:SudokuCellType) => void,
+    activeOption: -1 | 0 | 1,
+    toggleActive: (newActive:-1 | 0 | 1) => void,
   }>()
 
 </script>
 
 <style scoped lang="scss">
-.number-selector {
+.fill-selector {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -103,7 +114,7 @@
 
 @media only screen and (min-width: 640px) {
 
-  .number-selector {
+  .fill-selector {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: repeat(3, minmax(0, 1fr));

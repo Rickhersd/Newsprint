@@ -1,6 +1,6 @@
-import { SudokuBoardType } from "../types/SudokuTypes";
+import { SudokuBoard } from "../types/SudokuTypes";
 
-const defineColumns = (sudokuBoard: SudokuBoardType ) => {
+const defineColumns = (sudokuBoard: SudokuBoard ) => {
  
   let arrayOfColumns: number[][] = [];
  

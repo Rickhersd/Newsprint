@@ -9,18 +9,16 @@
 </template>
 
 <script lang="ts" setup>
-import { SudokuBoardType } from '../../types/SudokuTypes';
+  import { SudokuBoardType, SudokuCellType } from '../../types/SudokuTypes';
 
-  
   const props = defineProps<{
     value: number,
-    editBoard: (position: number[], newValue: number) => void,
-    completeBoard: SudokuBoardType,
+    editBoard: (position: number[], newValue: SudokuCellType) => void,
     initialBoard: SudokuBoardType,
     cellIndex: number,
     rowIndex: number,
-    activeValue: number,
-    toggleActive: (value: number) => void,
+    activeValue: SudokuCellType,
+    toggleActive: (value: SudokuCellType) => void,
   }>()
 
   function editCell(){
@@ -41,36 +39,52 @@ import { SudokuBoardType } from '../../types/SudokuTypes';
 
 <style lang='scss' scoped>
   .sudoku_cell {
-  height: 100%;
-  width: calc(100% / 9);
-  border: 0.5px solid #252525;
-  display: grid;
-  place-content: center;
-  background: var(--bg-teal);
+    height: 100%;
+    width: 100%;
+    border-right: 1px solid var(--light-border);
+    box-sizing: content-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:nth-child(3n) {
-      border-right: 1px solid var(--font-teal);
+      border-right: 2px solid var(--middle-border);
     }
 
     &:hover {
       cursor: pointer;
-      border: 1px solid #ffffff;
+      z-index: 10;
+      background-color: #ededed;
+      border-color: #ededed;
+      outline: 2px solid darkslategray;
     }
 
     &:active {
-      border: 1px solid var(--color-selected);
+      outline: 2px solid darkslategray;
     }
 
     h1 {
       font-weight: 200;
-      font-size: 24px;
-      color: var(--font-teal);
+      font-size: 18px;
+      color: var(--font-gray);
     }
 
-    :disabled h1 {
-      font-size: 28px;
+    &:disabled h1 {
       font-weight: 800;
-      color: var(--color-selected-soft);
+      color: var(--font-darkgray);
     }
   }
+
+@media only screen and (min-width: 450px) {
+  .sudoku_cell {
+    
+
+    h1 {
+    
+      font-size: 24px;
+    
+    }
+
+  } 
+}
 </style>

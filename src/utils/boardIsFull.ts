@@ -1,6 +1,6 @@
-import { SudokuBoardType } from "../types/SudokuTypes";
+import { SudokuBoard } from "../types/SudokuTypes";
 
-const boardIsFull = (boardArray: SudokuBoardType) => {
+const boardIsFull = (boardArray: SudokuBoard) => {
   let result = true;
   boardArray.forEach(row => {
     let count = 0;
