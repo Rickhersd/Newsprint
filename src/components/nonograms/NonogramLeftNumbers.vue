@@ -4,9 +4,15 @@
       gridTemplateRows: `repeat(${numberOfRows}, minmax(0, 1fr))`
     }"
   >
-    <div v-for='numbers in numberData' class="left-numbers__row">
-      <div v-for='number in numbers' class="left-numbers__number">
-        {{number}}
+    <div v-for='pattern in rowPatterns' class="left-numbers__row">
+      <div v-for='number in pattern' 
+        class="left-numbers__number"
+        :class="{
+          'left-numbers__number-completed': number.state == 'completed'
+        }"
+
+      >
+        {{number.value}}
       </div>
     </div>
   </div>
@@ -14,15 +20,14 @@
 
 
 <script setup lang="ts">
-  import getLateralNumbers from '../../utils/nonograms.ts/getLateralNumbers'
+  import { NonogramPatterns } from '../../types/nonogramTypes'
 
   const props = defineProps<{
-    completedBoard: (-1 | 0 | 1)[][],  
+    rowPatterns: NonogramPatterns,  
   }>()
 
-  const numberData = getLateralNumbers(props.completedBoard)
-  const maxNumberOfItems = getMaxNumberOfItems(numberData);
-  const numberOfRows = props.completedBoard.length; 
+  const maxNumberOfItems = getMaxNumberOfItems(props.rowPatterns);
+  const numberOfRows = props.rowPatterns.length; 
 
   function getMaxNumberOfItems(array: any[][]) {
   let maxNumberOfItems = 0;
@@ -69,6 +74,11 @@
       align-items: center;
       display: flex;
       aspect-ratio: 1/2;
+
+
+      &-completed{
+        color: green;
+      }
     }
   }
 

@@ -15,9 +15,7 @@ function validateHitori(hitoriBoard: HitoriBoardType) {
 
   checkUniqueConnection(hitoriBoard);
 
-  console.log(hitoriBoard);
-  
-
+  console.log(checkAllCorrect(hitoriBoard))
   return checkAllCorrect(hitoriBoard);
 }
 
@@ -72,8 +70,6 @@ function checkUniqueConnection(hitoriBoard: HitoriBoardType){
   hitoriBoard.forEach((row, rowIndex) => {
     row.forEach((cell, cellIndex) => {
       if (cell.value === -1 || cell.connectionKey !== 0) return;
-      console.log(cell.connectionKey !== 0)
-      console.log(cell)
       traverseCells(
         connectionKey, 
         hitoriBoard, 
@@ -95,7 +91,6 @@ function traverseCells(connectionKey:number, hitoriBoard: HitoriBoardType, {cell
 
 
   hitoriCell.connectionKey = connectionKey;
-  console.log(hitoriCell)
 
   cellDirections.forEach(direction => checkAdyacentCell(direction));
 
@@ -130,8 +125,6 @@ function resetAllConnectionKeys(gameBoard: HitoriBoardType){
 function checkAllConnectionKeys(hitoriBoard: HitoriBoardType){
 
   const connectionsDict: Record<number, number> = getConnectionsDict();
-
-  console.log(connectionsDict);
 
   if(Object.entries(connectionsDict).length <= 2) return;
 

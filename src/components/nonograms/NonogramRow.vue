@@ -3,45 +3,24 @@
     :style="{
       gridColumnStart: 1,
       gridColumnEnd: initialBoard.length + 1,
-      gridTemplateColumns: columnNumber, 
+      gridTemplateColumns: `repeat(${initialBoard.length}, minmax(0, 1fr))`, 
     }"
-
   >
-    <NonogramCell 
-      v-for="(value, i) in rowData" 
-      :key="i" 
-      :value="value"
-      :completedBoard="completeBoard"
-      :rowIndex="rowIndex"
-      :cellIndex="i"
-      :editBoard="editBoard"
-      :activeValue="activeValue"
-      :toggleActive="toggleActive"
-      :completeBoard="completeBoard"
-      :initialBoard="initialBoard"
-    />
+    <slot></slot>
   </div>
 </template>
+
 <script lang="ts" setup>
-  import { SudokuBoard } from '../../types/SudokuTypes';
-  import NonogramCell from './NonogramCell.vue';
+import { NonogramBoardType } from '../../types/nonogramTypes';
 
-  const props = defineProps<{
-    rowData: (-1 | 0 | 1)[],
-    rowIndex: number,
-    activeValue: number,
-    toggleActive: (value:-1 | 0 | 1) => void,
-    completeBoard: SudokuBoard,
-    initialBoard: SudokuBoard,
-    editBoard: (position: number[], newValue: -1 | 0 | 1) => void
-  }>()
-
-  const columnNumber:string = `repeat(${props.initialBoard.length}, minmax(0, 1fr))`
-  console.log(columnNumber)
+defineProps<{
+  initialBoard: NonogramBoardType, 
+}>()
 
 </script>
 
 <style scoped lang="scss">
+
 .nonogram-row {
   width: calc(100%);
   height: 100%;

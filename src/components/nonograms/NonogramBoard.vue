@@ -1,51 +1,29 @@
 <template>
-  <div class="nanogram-board"
-    :style="{
-      gridTemplateColumns: `repeat(${initialBoard.length}, minmax(0, 1fr))`,
-      gridTemplateRows: `repeat(${initialBoard.length}, minmax(0, 1fr))`
-    }"
-  >
-    <NonogramTopNumbers
-      :completeBoard="completeBoard"
-    />
-    <div class="nanogram-board__cont">
-      <NonogramLeftNumbers
-        :completedBoard="completeBoard"
-      />
-      <div class="nanogram-board__board">
-        <NonogramRow
-          v-for="(row, i ) in completeBoard"
-          :key="completeBoard.indexOf(row)"
-          :rowData="row"
-          :rowIndex="i"
-          :activeValue="activeValue"
-          :editBoard="editBoard"
-          :completeBoard="completeBoard"
-          :initialBoard="initialBoard"
-          :toggleActive="toggleActive"
-        />
+  <div class="nonogram-board">
+    <NonogramTopNumbers :colPatterns="colPatterns"/>
+    <div class="nonogram-board__cont">
+      <NonogramLeftNumbers :rowPatterns="rowPatterns" />
+      <div class="nonogram-board__board">
+        <slot></slot>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import NonogramRow from "./NonogramRow.vue";
   import NonogramTopNumbers from './NonogramTopNumbers.vue';
   import NonogramLeftNumbers from './NonogramLeftNumbers.vue';
+  import { NonogramPatterns, NonogramValidCellType } from '../../types/nonogramTypes'
  
   defineProps<{
-    completeBoard: (-1 | 0 | 1)[][],
-    initialBoard: (-1 | 0 | 1)[][],
-    activeValue: -1 | 0 | 1,
-    editBoard: (position: number[], newValue: -1 | 0 | 1) => void,
-    toggleActive: (input: -1 | 0 | 1) => void
+    rowPatterns: NonogramPatterns,
+    colPatterns: NonogramPatterns,
   }>()
 
 </script>
 
 <style scoped lang='scss'>
-.nanogram-board{
+.nonogram-board{
 
   &__cont{
     display: flex;
@@ -62,7 +40,7 @@
   }
 
 }
-.nanogram-board .congrats {
+.nonogram-board .congrats {
   width: 100%;
   height: 100%;
   display: grid;
@@ -82,21 +60,21 @@ h4:nth-child(3n) {
 
 @media only screen and (min-width: 640px) {
 
-  .nanogram-board{
+  .nonogram-board{
     width: 400px;
   }
 }
 
 @media only screen and (min-width: 1024px) {
 
-.nanogram-board{
+.nonogram-board{
   width: 450px;
 }
 }
 
 @media only screen and (min-width: 1536px) {
 
-  .nanogram-board{
+  .nonogram-board{
     width: 600px;
   }
 }

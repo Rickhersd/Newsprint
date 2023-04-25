@@ -5,13 +5,18 @@
       gridTemplateRows: `repeat(${maxNumberOfItems}, minmax(0, 1fr))`
     }"
   >
-    <div v-for='numbers in numberData' class="top-numbers__column"
+    <div v-for='pattern in colPatterns' class="top-numbers__column"
       :style="{
         gridRowEnd: maxNumberOfItems + 1,
       }"
     >
-      <div v-for='number in numbers' class="top-numbers__number">
-        {{number}}
+      <div v-for='number in pattern' 
+        class="top-numbers__number"
+        :class="{
+          'top-numbers__number-completed': number.state == 'completed'
+        }"
+        >
+        {{number.value}}
       </div>
     </div>
   </div>
@@ -19,18 +24,14 @@
 
 
 <script setup lang="ts">
-  import { StyleValue } from 'vue';
-  import getLateralNumbers from '../../utils/nonograms.ts/getLateralNumbers'
-  import invertBiArray from '../../utils/nonograms.ts/invertBiArray';
-
+  import { NonogramPatterns } from '../../types/nonogramTypes'
+  
   const props = defineProps<{
-    completeBoard: (-1 | 0 | 1)[][], 
+    colPatterns: NonogramPatterns, 
   }>()
 
-  const invertedBoard = invertBiArray(props.completeBoard);
-  const numberData = getLateralNumbers(invertedBoard)
-  const maxNumberOfItems = getMaxNumberOfItems(numberData);
-  const numberOfColumns = props.completeBoard.length; 
+  const maxNumberOfItems = getMaxNumberOfItems(props.colPatterns);
+  const numberOfColumns = props.colPatterns.length; 
 
   function getMaxNumberOfItems(array: any[][]) {
   let maxNumberOfItems = 0;
@@ -78,6 +79,10 @@
       align-items: center;
       display: flex;
       aspect-ratio: 4/3; 
+
+      &-completed{
+        color: green;
+      }
     }
   }
 

@@ -4,7 +4,6 @@
     <!-- <GameTimer :currentTime="currentTime" /> -->
     <HitoriBoard
       :hitoriBoard="gameHistory.getFirstRegister()"
-      
        >
       <HitoriRow
         v-for="(row, rowIndex) in gameHistory.getLastRegister()"
@@ -27,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { HitoriBoardType, HitoriCellType } from "../../types/HitoriTypes";
+import { HitoriBoardType, HitoriCellType, HitoriValidCellValues } from "../../types/HitoriTypes";
 import validateHitori from "../../utils/hitoriUtils";
 import buildHitoriBoard from "../../utils/hitoriUtils/buildHitoriBoard"
 // import GameTimer from "../GameTimer.vue";
@@ -37,7 +36,7 @@ import HitoriCell from "./HitoriCell.vue";
 import { ref, onUpdated } from "vue";
 import useHistory from "../../ts/useHistory";
 
-const initialBoard: HitoriBoardType = [
+const initialBoard: HitoriValidCellValues[][] = [
   [2, 4, 4, 2, 5],
   [1, 2, 4, 5, 2],
   [1, 1, 2, 3, 2],
@@ -58,17 +57,14 @@ function editBoard(position: number[], newValue: HitoriCellType): void {
   newRegister[position[0]][position[1]] = newValue;
   gameHistory.register(newRegister);
   moves.value++
-  console.log(gameHistory.gameHistory)
-
 }
 
 
-function stopTimer() {
+function stopGame() {
   console.log('correct')
 }
 
 onUpdated(() => {
-  console.log('hola')
   const isValid:boolean = validateHitori(gameHistory.gameHistory[gameHistory.gameHistory.length - 1]);
   if(isValid){
     stopGame();
