@@ -1,13 +1,12 @@
 import { ref, reactive, Ref } from 'vue'
-
 export type RegisterStack<H> = H[]
-export type GameBoard<S> = S[][]
 
 export default function useHistory<GameBoard>(load?: RegisterStack<GameBoard>) {
 
   const gameHistory = reactive<RegisterStack<GameBoard>>( load ?? []) as RegisterStack<GameBoard>;
   const backup = ref(<RegisterStack<GameBoard>>([])) as Ref<RegisterStack<GameBoard>>;
   const inReading = ref<boolean>(false);
+  const moves = ref<number>(1);
 
   const register = (register: GameBoard):void => {
     if (inReading.value) {
@@ -15,6 +14,7 @@ export default function useHistory<GameBoard>(load?: RegisterStack<GameBoard>) {
       inReading.value = false;
     }
     gameHistory.push(register);
+    moves.value++;
   }
 
   const back = (): void => {
@@ -23,23 +23,15 @@ export default function useHistory<GameBoard>(load?: RegisterStack<GameBoard>) {
     backup.value.push(lastItem);
     gameHistory.pop()
     inReading.value = true;
-    console.log(gameHistory)
-    console.log(' EN backup: ' + backup)
+    moves.value--;
   }
 
   const next = (): void => {
-    console.log(backup.value.length)
-
     if (!backup.value.length || inReading.value === false) return;
     const recoveredItem: GameBoard = getLastItem(backup.value)
     gameHistory.push(recoveredItem )
     backup.value.pop();
-    console.log(gameHistory)
-    console.log(' EN backup: ' + backup)
-  }
-
-  const getLastRegister = (): GameBoard => {
-    return getLastItem(gameHistory);
+    moves.value++;
   }
 
   const readAll = ():RegisterStack<GameBoard> => {
@@ -58,12 +50,30 @@ export default function useHistory<GameBoard>(load?: RegisterStack<GameBoard>) {
     return stack[stack.length - 1];
   }  
 
+  const reset = (): void => {
+    while (gameHistory.length > 1){
+      gameHistory.pop();
+    } 
+    moves.value = 1;
+  }
+
+  const getLastRegister = ():GameBoard => { 
+    return gameHistory[gameHistory.length - 1]  
+  }
+
+  const getFirstRegister = ():GameBoard => {
+    return gameHistory[0];
+  }
+
   return {
     gameHistory,
+    getLastRegister,
+    getFirstRegister,
+    moves,
+    reset,
     register,
     next,
     back,
-    getLastRegister,
     readAll
   }
 }

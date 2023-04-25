@@ -1,32 +1,38 @@
 <template>
   <div class="sudoku-toolbar">
     <div class="sudoku-toolbar__tools">
-      <div class="sudoky-toolbar__tools-history">
+      <div class="sudoku-toolbar__tools-history">
         <button class="sudoku-toolbar__tools-btn " @click="handleBack">
           <v-icon icon="mdi-arrow-u-left-top"></v-icon>
         </button>
-        <button class="sudoku-toolbar__tools-btn " @click="handleBack">
-          <v-icon icon="mdi-arrow-u-left-top"></v-icon>
+        <button class="sudoku-toolbar__tools-btn " @click="handleNext">
+          <v-icon icon="mdi-arrow-u-right-top"></v-icon>
         </button>
       </div>
-      <button class="sudoku-toolbar__tools-btn"  @click="handleNext">
-        <v-icon icon="mdi-eraser"></v-icon>
-      </button>
-      <button class="sudoku-toolbar__tools-btn">
-        <v-icon icon="mdi-lightbulb-on-outline"></v-icon>
-      </button>
+      <div class="sudoku-toolbar__tools-extra">
+        <RestartBtn
+          :handleRestart="handleRestart"
+        ></RestartBtn>
+        <button class="sudoku-toolbar__tools-btn">
+          <v-icon icon="mdi-lightbulb-on-outline"></v-icon>
+        </button>
+      </div>
     </div>
-    <SudokuNumberSelector :activeValue="activeValue" :toggleActive="toggleActive" />
+    <SudokuNumberSelector 
+      :activeValue="activeValue" 
+      :toggleActive="toggleActive" />
   </div>
 </template>
 
 <script lang="ts" setup>
   import SudokuNumberSelector from "./SudokuNumberSelector.vue";
-  import { SudokuCellType } from "../../types/SudokuTypes";
+  import { SudokuValidCellValues } from "../../types/SudokuTypes";
+  import RestartBtn from "../RestartBtn.vue";
 
   defineProps<{
-    activeValue: SudokuCellType,
-    toggleActive: (number:SudokuCellType) => void,
+    activeValue: SudokuValidCellValues,
+    toggleActive: (activeTarget:SudokuValidCellValues) => void,
+    handleRestart: () => void,
     handleBack: () => void,
     handleNext: () => void,
   }>()
@@ -39,22 +45,46 @@
   width: 100%;
   max-width: 300px;
   font-weight: 400;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 
   &__tools {
+    display: flex;
+    flex-direction: column;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 4;
+    gap: 1rem;
 
     &-history{
       background-color: var(--i-secundary-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      border-radius: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    &-btn {
-      width: 40px;
-      height: 40px;
+    &-extra {
+      display: flex;
+      flex-direction: row;
+      border-radius: 1.5rem;
       background-color: var(--i-secundary-color);
+    }
+
+    &-btn{
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }
@@ -85,8 +115,20 @@
 
 @media only screen and (min-width: 640px) {
 
-  .sudoku_board{
-    width: 400px;
+  .sudoku-toolbar{
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    &__tools{
+      flex-direction: row;
+
+      &-btn{
+        width: 50px;
+        height: 50px;
+      }
+    }
   }
 }
 

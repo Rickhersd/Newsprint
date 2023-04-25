@@ -5,19 +5,47 @@
 </template>
 
 <script lang="ts" setup>
+  import { onMounted, ref, watchEffect } from 'vue';
 
-  defineProps<{
-    currentTime: number,
+  const props = defineProps<{
+    initialTime: number,
   }>() 
 
-  function formatTime(seconds: number): string {
+  const emits = defineEmits<{
+    (e: 'onTimerEnd', time: number):void,
+  }>()
+
+  const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     const formattedMinutes = minutes.toString().padStart(1, '0');
     const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
-
     return `${formattedMinutes}:${formattedSeconds}`;
   }
+  
+  const currentTime = ref<number>(props.initialTime);
+  let timerId: ReturnType<typeof setInterval>  | null = null;
+
+  const startTimer = () => {
+    timerId = setInterval(() => {
+      currentTime.value++;
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    clearInterval(timerId as ReturnType<typeof setInterval>);
+    emits('onTimerEnd', currentTime.value );
+  };
+
+  // watchEffect(onInvalidate => {
+  //   onInvalidate(() => {
+  //     stopTimer();
+  //   });
+  // });
+
+  onMounted(() => {
+    startTimer()
+  })
 
 </script>
 

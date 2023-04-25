@@ -1,10 +1,10 @@
-import { SudokuBoard } from "../types/SudokuTypes";
+import { SudokuBoardType, SudokuValidCellValues} from "../types/SudokuTypes";
 
-const countNInBoard = (n:number, sudokuBoard:SudokuBoard) => {
+const countNInBoard = (n:SudokuValidCellValues, sudokuBoard:SudokuBoardType) => {
   let count = 0;
-  sudokuBoard.forEach((row) => {
-    row.forEach((value) => {
-      if (value === n) {
+  sudokuBoard.forEach(row => {
+    row.forEach((cell) => {
+      if (cell.value === n) {
         count++;
       }
     });

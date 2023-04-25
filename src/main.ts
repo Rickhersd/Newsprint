@@ -10,10 +10,13 @@ import '@mdi/font/css/materialdesignicons.css'
 
 
 //VueRouter
-import { createRouter, createWebHashHistory} from 'vue-router'
-import Sudoku from './components/sudoku/Sudoku.vue'
+import { createRouter, createWebHistory} from 'vue-router'
+
 import Home from './components/Home.vue'
+import Sudoku from './components/sudoku/Sudoku.vue'
 import Nonogram from './components/nonograms/Nonogram.vue'
+import Hitori from './components/hitori/Hitori.vue'
+import Futoshiki from './components/futoshiki/Futoshiki.vue'
 
 const vuetify = createVuetify({
   icons: {
@@ -26,13 +29,15 @@ const vuetify = createVuetify({
 })
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     { path: '/', component: Home},
     { path: '/tutorial', component: Home},
     { path: '/tutorial/:game', component: Home},
     { path: '/sudoku', component: Sudoku },
     { path: '/nonogram', component: Nonogram },
+    { path: '/hitori', component: Hitori },
+    { path: '/futoshiki', component: Futoshiki },
     { path: '/sudoky/:id', component: Home},
   ]
 })

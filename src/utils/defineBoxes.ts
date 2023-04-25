@@ -1,22 +1,15 @@
-import { SudokuBoard, SudokuRowType } from "../types/SudokuTypes";
+import { SudokuBoardType, SudokuCellType } from "../types/SudokuTypes";
 
-const defineBoxes = (sudokuBoard: SudokuBoard) => {
-  
-  const arrayOfBoxes:SudokuRowType[] = [];
+const defineBoxes = (sudokuBoard: SudokuBoardType): SudokuCellType[][] => {
+  const arrayOfBoxes: SudokuCellType[][] = [];
 
-  sudokuBoard.forEach( _ => arrayOfBoxes.push([]))
+  sudokuBoard.forEach((_) => arrayOfBoxes.push([]));
 
-  let box = 0;
-
-  // boxSet will tell us which 'row' of boxes we need to be inserting into
+  let boxIndex = 0;
   let boxSet = 0;
-
-  // count will tell us when to move on to the next box when sorting
   let count = 1;
 
-  // define box sets from input
   sudokuBoard.forEach((row, i) => {
-    
     if (i < 3) {
       boxSet = 0;
     }
@@ -28,13 +21,12 @@ const defineBoxes = (sudokuBoard: SudokuBoard) => {
     }
 
     row.forEach((value) => {
-    
-      if (box % 3 === 0) {
-        box = boxSet;
+      if (boxIndex % 3 === 0) {
+        boxIndex = boxSet;
       }
-      arrayOfBoxes[box].push(value);
+      arrayOfBoxes[boxIndex].push(value);
       if (count % 3 === 0) {
-        box++;
+        boxIndex++;
       }
       count++;
     });

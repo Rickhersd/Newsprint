@@ -1,7 +1,7 @@
 <template>
   <div class="number-selector">
     <button
-      class="number-selector__button"
+      class="number-selector_button"
       v-for="number in numbers"
       :key="number"
       @click="() => toggleActive(number)"
@@ -15,55 +15,55 @@
 </template>
 
 <script setup lang="ts">
-  import { SudokuValidCellValues } from '../../types/SudokuTypes';
-  
-  const numbers:SudokuValidCellValues[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+import { FutoshikiBoardType } from "../../types/FutoshikiTypes";
 
-  defineProps<{
-    activeValue: SudokuValidCellValues,
-    toggleActive: (activeTarget:SudokuValidCellValues) => void,
-  }>()
+const props = defineProps<{
+  activeValue: number;
+  initialBoard: FutoshikiBoardType;
+  toggleActive: (newActive: number) => void;
+}>();
 
+const numbers: number[] = props.initialBoard.map((_, index) => index + 1);
 </script>
 
 <style scoped lang="scss">
-
 .number-selector {
   width: 100%;
   display: grid;
-  grid-column-start: 3;
-  grid-column-end: 6;
-  grid-row-start: 1;
-  grid-row-end: 4;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(1, minmax(0, 1fr));
   background-color: var(--i-secundary-color);
-  border-radius: 1.5rem;
-  aspect-ratio: 1/1;
-  overflow: hidden;
+  border-radius: 2rem;
+  padding: 0.5rem 2rem;
 
-  &__button{
+  &_button {
+    background: none;
     width: 100%;
     height: 100%;
-    aspect-ratio: 1/1;
     border: none;
-    color: black;
-    font-size: 20px;
+    aspect-ratio: 1/1;
+    color: var(--font-gray);
+    font-size: 24px;
     font-weight: 500;
     cursor: pointer;
 
-    :hover {
-      background-color: darkgray;
+    &:hover {
+      background-color: rgb(180 180 220);
+      border-radius: 0.25rem;
     }
 
-    &-seleted{
+    &-seleted {
       font-size: 32px;
       font-weight: 500;
       color: blue;
     }
   }
 }
-  
+.numberSelector img {
+  filter: invert(87%) sepia(27%) saturate(151%) hue-rotate(306deg)
+    brightness(103%) contrast(101%);
+}
+
 .numberSelector .selection {
   font-weight: 200;
   width: calc(80% / 9);
@@ -74,7 +74,6 @@
 .numberSelector button:hover {
   font-size: 32px;
   color: var(--color-selected);
-  color: red;
   cursor: pointer;
 }
 .numberSelector button:disabled {
@@ -106,25 +105,18 @@
 }
 
 @media only screen and (min-width: 640px) {
-
   .number-selector {
-    max-width: 700px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    max-width: 450px;
     width: 100%;
-    /* height: 48px; */
     padding: 0rem 1rem;
+    background-color: var(--i-secundary-color);
     border-radius: 3rem;
-    aspect-ratio: auto;
-    /* border: 0.5px solid rgba(255, 255, 255, 0.5019607843); */
     display: flex;
-    overflow: auto;
     align-items: center;
     justify-content: center;
-
-    &__button{
-      width: 50px;
-      height: 50px;
-    }
   }
-
 }
 </style>

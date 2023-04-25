@@ -1,38 +1,32 @@
 <template>
   <button
     class="sudoku_cell"
-    :disabled="isReadOnly()"
+    :class="{'sudoku_cell-wrong': cellData.state === 'wrong'}"
+    :disabled="cellData.readOnly"
     @click="() => editCell()"
   >
-    <h1>{{ value === 0 ? '' : value }}</h1>
+    <h1>{{ cellData.value === 0 ? '' : cellData.value }}</h1>
   </button>
 </template>
 
 <script lang="ts" setup>
-  import { SudokuBoardType, SudokuCellType } from '../../types/SudokuTypes';
+  import { SudokuCellType, SudokuValidCellValues } from '../../types/SudokuTypes';
 
   const props = defineProps<{
-    value: number,
+    cellData: SudokuCellType,
     editBoard: (position: number[], newValue: SudokuCellType) => void,
-    initialBoard: SudokuBoardType,
     cellIndex: number,
     rowIndex: number,
-    activeValue: SudokuCellType,
-    toggleActive: (value: SudokuCellType) => void,
+    activeValue: SudokuValidCellValues,
   }>()
 
   function editCell(){
-    if (props.activeValue) {
-      props.editBoard([props.rowIndex, props.cellIndex], props.activeValue);
-    } else if (props.activeValue === 0) {
-      props.editBoard([props.rowIndex, props.cellIndex], 0);
-    } else {
-      console.error(new Error("No number has been selected"));
-    }
-  }
-
-  function isReadOnly(){
-    return props.initialBoard[props.rowIndex][props.cellIndex] != 0;
+    console.log('editado')
+    console.log(props.activeValue)
+    props.editBoard(
+      [props.rowIndex, props.cellIndex],
+      {value: props.activeValue, readOnly: false, state: 'correct'}
+    )
   }
 
 </script>
@@ -49,6 +43,10 @@
 
     &:nth-child(3n) {
       border-right: 2px solid var(--middle-border);
+    }
+
+    &-wrong{
+      background-color: rgb(236, 141, 141);
     }
 
     &:hover {
@@ -77,14 +75,9 @@
 
 @media only screen and (min-width: 450px) {
   .sudoku_cell {
-    
-
     h1 {
-    
       font-size: 24px;
-    
     }
-
   } 
 }
 </style>
