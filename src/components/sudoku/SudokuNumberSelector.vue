@@ -1,4 +1,4 @@
-<template>
+<template #number-controller>
   <div class="number-selector">
     <button
       class="number-selector__button"

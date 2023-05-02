@@ -1,28 +1,32 @@
 <template>
-  <div class="futoshiki-cell__cont">
+  <div class="futoshiki-cell">
     <button class="futoshiki-cell__input" @click="() => editCell()">
-      <h1 v-if="cellData.value !== 0" class="futoshiki-cell">
-        {{ cellData.value }}
+      <h1 v-if="cell.value !== 0" class="futoshiki-cell">
+        {{ cell.value }}
       </h1>
-      <span v-if="cellData.comparison" class="futoshiki-cell__arrow-cont">
-        <v-icon
-          v-if="cellData.comparison.includes('left')"
-          class="futoshiki-cell__arrow futoshiki-cell__arrow-left"
-          icon="mdi-chevron-left"
+      <span 
+        v-if="cell.comparisons" 
+        v-for="comparison in cell.comparisons"  
+        class="futoshiki-cell__arrow"
+        >
+        <v-icon 
+          v-if="comparison.type === 'left'" 
+          class="futoshiki-cell__arrow-left"
+          icon="mdi-chevron-left" 
         ></v-icon>
         <v-icon
-          v-if="cellData.comparison.includes('right')"
-          class="futoshiki-cell__arrow futoshiki-cell__arrow-right"
+          v-if="comparison.type === 'right'"
+          class="futoshiki-cell__arrow-right"
           icon="mdi-chevron-right"
         ></v-icon>
         <v-icon
-          v-if="cellData.comparison.includes('top')"
-          class="futoshiki-cell__arrow futoshiki-cell__arrow-top"
+          v-if="comparison.type === 'top'"
+          class="futoshiki-cell__arrow-top"
           icon="mdi-chevron-up"
         ></v-icon>
         <v-icon
-          v-if="cellData.comparison.includes('bottom')"
-          class="futoshiki-cell__arrow futoshiki-cell__arrow-bottom"
+          v-if="comparison.type === 'bottom'"
+          class="futoshiki-cell__arrow-bottom"
           icon="mdi-chevron-down"
         ></v-icon>
       </span>
@@ -31,15 +35,11 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  FutoshikiCellType,
-  FutoshikiBoardType,
-} from "../../types/FutoshikiTypes";
+import { FutoshikiCellType, FutoshikiBoardType } from "../../types/FutoshikiTypes";
 
 const props = defineProps<{
-  cellData: FutoshikiCellType;
+  cell: FutoshikiCellType;
   editBoard: (position: number[], newValue: number) => void;
-  initialBoard: FutoshikiBoardType;
   activeValue: number;
   cellIndex: number;
   rowIndex: number;
@@ -47,9 +47,17 @@ const props = defineProps<{
 
 const editCell = () => {
   if (props.activeValue) {
-    props.editBoard([props.rowIndex, props.cellIndex], props.activeValue);
+    props.editBoard([props.rowIndex, props.cellIndex], {
+      value: props.activeValue,
+      state: props.cell.state,
+      comparisons: props.cell.comparisons
+    });
   } else if (props.activeValue === 0) {
-    props.editBoard([props.rowIndex, props.cellIndex], 0);
+    props.editBoard([props.rowIndex, props.cellIndex], {
+      value: 0,
+      state: props.cell.state,
+      comparisons: props.cell.comparisons
+    });
   } else {
     console.error(new Error("No number has been selected"));
   }
@@ -58,14 +66,13 @@ const editCell = () => {
 
 <style lang="scss" scoped>
 .futoshiki-cell {
-  &__cont {
-    height: 100%;
-    width: 100%;
-    box-sizing: content-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  
+  height: 100%;
+  width: 100%;
+  box-sizing: content-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &__input {
     aspect-ratio: 1/1;
@@ -85,20 +92,17 @@ const editCell = () => {
   &__arrow {
     position: absolute;
     aspect-ratio: 1/1;
-    width: 50%;
-    height: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    translate: 100% -50%;
-    top: 50%;
-    right: 0%;
+    width: 100%;
+    height: 100%;
+    display: block;
+    top: 0%;
+    left: 0%;
 
     &-cont {
       width: 100%;
       height: 100%;
-      display: contents;
-      position: relative;
+      display: block;
+      position: absolute;
     }
 
     &::before {
@@ -107,27 +111,31 @@ const editCell = () => {
     }
 
     &-left {
-      translate: -100% -50%;
+      translate: -50% -50%;
       top: 50%;
-      left: 0%;
+      left: -26.25%;
+      position: absolute;
     }
 
     &-bottom {
-      translate: -50% 100%;
-      bottom: 0%;
+      translate: -50% 50%;
+      bottom: -26.25%;
       left: 50%;
+      position: absolute;
     }
 
     &-top {
-      translate: -50% -100%;
-      top: 0%;
+      translate: -50% -50%;
+      top: -26.25%;
       left: 50%;
+      position: absolute;
     }
 
     &-right {
-      translate: 100% -50%;
+      translate: 50% -50%;
       top: 50%;
-      right: 0%;
+      right: -26.25%;
+      position: absolute;
     }
   }
 

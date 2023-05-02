@@ -10,3 +10,8 @@ export type GameBoardCell<T> = {
 
 export type GameBoardRow<G> = G[]
 export type GameBoard<H> = GameBoardRow<H>[]
+
+export type Difficulty = {
+  label: string,
+  starsNumber: number
+}

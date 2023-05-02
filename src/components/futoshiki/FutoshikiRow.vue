@@ -2,8 +2,8 @@
   <div
     class="futoshiki__row"
     :style="{
-      gridColumnEnd: gameBoard.length + 1,
-      gridTemplateColumns: `repeat(${gameBoard.length}, minmax(0, 1fr))`,
+      gridColumnEnd: initialBoard.length + 1,
+      gridTemplateColumns: `repeat(${initialBoard.length}, minmax(0, 1fr))`,
     }"
   >
     <slot></slot>
@@ -12,14 +12,15 @@
 
 <script lang="ts" setup>
 import { FutoshikiBoardType } from "../../types/FutoshikiTypes";
-
-defineProps<{
-  gameBoard: FutoshikiBoardType;
+  
+const props = defineProps<{
+  initialBoard: FutoshikiBoardType;
 }>();
 
 </script>
 
 <style scoped lang="scss">
+
 .futoshiki__row {
   width: calc(100%);
   height: 100%;

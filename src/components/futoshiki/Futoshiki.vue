@@ -1,14 +1,24 @@
 <template>
-  <div class="Futoshiki_container">
+  <div class="Futoshiki_container" key="moves">
     <h1>Futoshiki</h1>
     <!-- <GameTimer :currentTime="currentTime" /> -->
-    <FutoshikiBoard
-      :completeBoard="completedBoard"
-      :gameBoard="gameHistory.lastRegister"
-      :initialBoard="initialBoard"
-      :activeValue="activeValue"
-      :editBoard="editBoard"
-    />
+    <FutoshikiBoard 
+      :initialBoard="gameHistory.getFirstRegister()">
+      <FutoshikiRow 
+        v-for="(row, rowIndex) in gameHistory.getLastRegister()"
+        :initialBoard="gameHistory.getFirstRegister()"
+        :key="rowIndex" 
+      > 
+        <FutoshikiCell 
+          v-for="(cell, cellIndex) in row"
+          :cell="cell"
+          :editBoard="editBoard"
+          :activeValue="activeValue"
+          :rowIndex="rowIndex"
+          :cellIndex="cellIndex"
+        />
+      </FutoshikiRow>
+    </FutoshikiBoard>
     <FutoshikiToolbar
       :activeValue="activeValue"
       :initialBoard="initialBoard"
@@ -18,92 +28,42 @@
 </template>
 
 <script setup lang="ts">
-import {
-  FutoshikiBoardType,
-  FutoshikiCellType,
-} from "../../types/FutoshikiTypes";
-import countNInBoard from "../../utils/countNInBoard";
-import validateGameBoard from "../../utils/validateGameBoard";
+import { FutoshikiBoardType, FutoshikiCellType } from "../../types/FutoshikiTypes";
+import { ref, onMounted, onUpdated } from "vue";
 import validateFutoshiki from "../../utils/futoshikiUtils";
 import FutoshikiToolbar from "./FutoshikiToolbar.vue";
 // import GameTimer from "../GameTimer.vue";
+import buildFutoshikiBoard from "../../utils/futoshikiUtils/buildFutoshikiBoard"
 import FutoshikiBoard from "./FutoshikiBoard.vue";
-import { ref, onMounted, onUpdated } from "vue";
+import FutoshikiRow from "./FutoshikiRow.vue";
+import FutoshikiCell from "./FutoshikiCell.vue"
 import useHistory from "../../ts/useHistory";
-import invertBiArray from "../../utils/nonograms.ts/invertBiArray";
 
-const completedBoard: FutoshikiBoardType = [
-  [
-    { value: 3, comparison: null, state: 'empty' },
-    { value: 4, comparison: null, state: 'empty' },
-    { value: 1, comparison: null, state: 'empty' },
-    { value: 2, comparison: null, state: 'empty'  },
-  ],
-  [
-    { value: 4, comparison: ["top"], state: 'empty'  },
-    { value: 3, comparison: null, state: 'empty'  },
-    { value: 2, comparison: null, state: 'empty'  },
-    { value: 1, comparison: null, state: 'empty'  },
-  ],
-  [
-    { value: 2, comparison: null, state: 'empty'  },
-    { value: 1, comparison: null, state: 'empty'  },
-    { value: 4, comparison: null, state: 'empty'  },
-    { value: 3, comparison: null, state: 'empty'  },
-  ],
-  [
-    { value: 1, comparison: null, state: 'empty'  },
-    { value: 2, comparison: ["top"], state: 'empty'  },
-    { value: 3, comparison: ["left"], state: 'empty'  },
-    { value: 4, comparison: ["left"], state: 'empty'  },
-  ],
+const initialBoard: (("top" | "left" | "right" | "bottom")[]| null)[][] = [
+  [null, null, null, null],
+  [['top'], null, ['top', 'bottom', 'left', 'right'], null],
+  [null, null, null, null],
+  [null, ['top'], ['left'], ['left']]
 ];
 
-const initialBoard: FutoshikiBoardType = [
-  [
-    { value: 3, comparison: null, state: 'empty'  },
-    { value: 4, comparison: null, state: 'empty'  },
-    { value: 1, comparison: null, state: 'empty'  },
-    { value: 2, comparison: null, state: 'empty'  },
-  ],
-  [
-    { value: 4, comparison: ["top"], state: 'empty'  },
-    { value: 3, comparison: null, state: 'empty'  },
-    { value: 2, comparison: null, state: 'empty'  },
-    { value: 1, comparison: null, state: 'empty'  },
-  ],
-  [
-    { value: 2, comparison: null, state: 'empty'  },
-    { value: 1, comparison: null, state: 'empty'  },
-    { value: 4, comparison: null, state: 'empty'  },
-    { value: 3, comparison: null, state: 'empty'  },
-  ],
-  [
-    { value: 1, comparison: null, state: 'empty'  },
-    { value: 2, comparison: ["top"], state: 'empty'  },
-    { value: 3, comparison: ["left"], state: 'empty'  },
-    { value: 4, comparison: ["left"], state: 'empty'  },
-  ],
-];
-
-const gameHistory = useHistory<FutoshikiBoardType>([initialBoard]);
+const gameHistory = useHistory<FutoshikiBoardType>([buildFutoshikiBoard(initialBoard)]);
 
 onUpdated(() => {
-  validateFutoshiki(gameHistory.lastRegister);
+  validateFutoshiki(gameHistory.getLastRegister());
 });
 
 const activeValue = ref<number>(0);
 const currentTime = ref<number>(0);
+const moves = ref<number>(0);
 
 let timerId: NodeJS.Timer | null = null;
 let completeTime = ref<number>(0);
 
-function editBoard(position: number[], newValue: number): void {
-  const newRegister = gameHistory.gameHistory[
-    gameHistory.gameHistory.length - 1
-  ].map((row) => [...row]);
-  newRegister[position[0]][position[1]].value = newValue;
+function editBoard(position: number[], newValue: FutoshikiCellType): void {
+  const newRegister = gameHistory.getLastRegister().map(row => [...row]);
+  newRegister[position[0]][position[1]] = newValue;
   gameHistory.register(newRegister);
+  moves.value++;
 }
 
 // function startTimer(): void {
@@ -122,7 +82,7 @@ function toggleActive(input: number) {
   return (activeValue.value = input);
 }
 
-function resetBoard(): void {
+function handleReset(): void {
   initialBoard.forEach((row, i) => {
     row.forEach((value, j) => {
       editBoard([i, j], value.value);
@@ -130,25 +90,18 @@ function resetBoard(): void {
   });
 }
 
-function buildGameBoard(gameBoard: FutoshikiBoardType) {
-  gameBoard.forEach((row, i) => {
-    row.forEach((value, j) => {
-      editBoard([i, j], value.value);
-    });
-  });
+function handleNext(): void {
+  //
+}
+
+function handleBack(): void {
+  //
 }
 
 function getBoard() {
   //
 }
 
-// onMounted(() => {
-//   timerId = setInterval(startTimer, 1000);
-// });
-
-// onBeforeUnmount(() => {
-//   clearInterval(timerId)
-// })
 </script>
 
 <style scoped>

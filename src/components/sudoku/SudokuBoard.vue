@@ -1,12 +1,15 @@
 <template>
   <div class="sudoku_board">
     <slot></slot>
+    <div class="sudoku_board__toolbar-aside">
+      <slot name='toolbar'></slot>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup></script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .sudoku_board {
   width: calc(100% + 1px);
   aspect-ratio: 1/1;
@@ -16,6 +19,23 @@
   grid-template-rows: repeat(9, minmax(0, 1fr));
   border: 3px solid rgb( 2 2 2);
   box-shadow: 0 0 4px var(--font-teal-transparent);
+  position: relative;
+
+  &__toolbar-aside{
+    position: fixed;
+    width: 100%;
+    height: auto;
+    display: grid;
+    z-index: 100;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    background-color: var(--vue-mint);
+    left: 0px;
+    bottom: 0px;
+
+    i::before {
+      color:white;
+    }
+  }
 }
 
 .sudoku_board .congrats {
@@ -40,14 +60,29 @@ h4:nth-child(3n) {
 
   .sudoku_board{
     width: 400px;
+
+    &__toolbar-aside{
+      position: absolute;
+      width: 3rem;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      top: 0px;
+      bottom: auto;
+      background-color: transparent;
+      gap:0.5rem;
+      left: calc(100% + 1.5rem);
+    }
   }
 }
 
 @media only screen and (min-width: 1024px) {
 
-.sudoku_board{
-  width: 450px;
-}
+  .sudoku_board{
+    width: 450px;
+
+    
+  }
 }
 
 @media only screen and (min-width: 1536px) {

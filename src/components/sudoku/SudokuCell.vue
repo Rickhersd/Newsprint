@@ -1,9 +1,12 @@
 <template>
   <button
     class="sudoku_cell"
-    :class="{'sudoku_cell-wrong': cellData.state === 'wrong'}"
+    :class="{
+      'sudoku_cell-wrong': (cellData.state === 'wrong' && showErrors === true ),
+      'sudoku_cell-selected': selectedCell}"
     :disabled="cellData.readOnly"
-    @click="() => editCell()"
+    @click="handleClick"
+    @keydown="handleKeyDown"
   >
     <h1>{{ cellData.value === 0 ? '' : cellData.value }}</h1>
   </button>
@@ -11,22 +14,33 @@
 
 <script lang="ts" setup>
   import { SudokuCellType, SudokuValidCellValues } from '../../types/SudokuTypes';
+  import { PositionType } from '../../types/types'
 
   const props = defineProps<{
     cellData: SudokuCellType,
-    editBoard: (position: number[], newValue: SudokuCellType) => void,
+    selectedCell: boolean; 
+    showErrors: boolean,
     cellIndex: number,
     rowIndex: number,
     activeValue: SudokuValidCellValues,
   }>()
 
-  function editCell(){
-    console.log('editado')
-    console.log(props.activeValue)
-    props.editBoard(
-      [props.rowIndex, props.cellIndex],
-      {value: props.activeValue, readOnly: false, state: 'correct'}
-    )
+  const emits = defineEmits<{
+    (e: 'onEdit', position: PositionType, newValue: number):void
+    (e: 'onSelect', rowIndex: number, cellIndex: number ):void
+  }>()
+
+  const handleClick = () => {
+    emits('onEdit', {rowIndex: props.rowIndex, cellIndex: props.cellIndex}, props.activeValue)
+    emits('onSelect', props.rowIndex, props.cellIndex);
+  }
+
+  const handleKeyDown = (event) => {
+    const keyCode = event.keyCode || event.which;
+    const value = String.fromCharCode(keyCode);
+    if (value >= '1' && value <= '9') {
+      emits('onEdit', {rowIndex: props.rowIndex, cellIndex: props.cellIndex}, parseInt(value, 10));
+    }
   }
 
 </script>
@@ -49,6 +63,17 @@
       background-color: rgb(236, 141, 141);
     }
 
+    &-selected{
+      filter: grayscale(50%);
+      background-color: red;
+      cursor: pointer;
+      z-index: 10;
+      background-color: #ededed;
+      border-color: #ededed;
+      outline: 2px solid darkslategray;
+
+    }
+
     &:hover {
       cursor: pointer;
       z-index: 10;
@@ -57,14 +82,11 @@
       outline: 2px solid darkslategray;
     }
 
-    &:active {
-      outline: 2px solid darkslategray;
-    }
-
     h1 {
       font-weight: 200;
       font-size: 18px;
       color: var(--font-gray);
+      
     }
 
     &:disabled h1 {

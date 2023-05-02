@@ -6,39 +6,17 @@
       gridTemplateRows: `repeat(${initialBoard.length}, minmax(0, 1fr))`,
     }"
   >
-    <FutoshikiRow
-      v-for="(row, rowIndex) in gameBoard"
-      :gameBoard="initialBoard"
-      :key="rowIndex"
-    >
-      <FutoshikiCell
-        v-for="(cellData, i) in row"
-        :key="i"
-        :cellData="cellData"
-        :rowIndex="rowIndex"
-        :cellIndex="i"
-        :activeValue="activeValue"
-        :editBoard="editBoard"
-        :initialBoard="initialBoard"
-      />
-    </FutoshikiRow>
+    <slot></slot>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {
-  FutoshikiBoardType,
-  FutoshikiCellType,
-} from "../../types/FutoshikiTypes";
-import FutoshikiCell from "./FutoshikiCell.vue";
-import FutoshikiRow from "./FutoshikiRow.vue";
+import { FutoshikiBoardType, FutoshikiCellType, } from "../../types/FutoshikiTypes";
 
 defineProps<{
-  gameBoard: FutoshikiBoardType;
-  activeValue: number;
-  editBoard: (position: number[], newValue: number) => void;
   initialBoard: FutoshikiBoardType;
 }>();
+
 </script>
 
 <style scoped lang="scss">

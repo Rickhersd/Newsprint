@@ -12,8 +12,10 @@ import '@mdi/font/css/materialdesignicons.css'
 //VueRouter
 import { createRouter, createWebHistory} from 'vue-router'
 
-import Home from './components/Home.vue'
-import Sudoku from './components/sudoku/Sudoku.vue'
+import Home from './views/Home.vue'
+import Sudoku from './views/Sudoku.vue'
+
+import SudokuGame from './components/sudoku/SudokuGame.vue'
 import Nonogram from './components/nonograms/Nonogram.vue'
 import Hitori from './components/hitori/Hitori.vue'
 import Futoshiki from './components/futoshiki/Futoshiki.vue'
@@ -34,7 +36,8 @@ const router = createRouter({
     { path: '/', component: Home},
     { path: '/tutorial', component: Home},
     { path: '/tutorial/:game', component: Home},
-    { path: '/sudoku', component: Sudoku },
+    { path: '/sudokus', component: Sudoku },
+    { path: '/sudokus/:id', component: SudokuGame },
     { path: '/nonogram', component: Nonogram },
     { path: '/hitori', component: Hitori },
     { path: '/futoshiki', component: Futoshiki },
