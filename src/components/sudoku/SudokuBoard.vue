@@ -27,7 +27,7 @@
     height: auto;
     display: grid;
     z-index: 100;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     background-color: white;
     border-top: 1px solid grey;
     left: 0px;
