@@ -158,9 +158,8 @@ export function invertGameBoard(gameBoard: GameBoard<GameBoardCell<any>>): GameB
   </div>
 </template>
 
-<script lang="ts" setup>
-import { FutoshikiBoardType } from "../../types/FutoshikiTypes";
-  
+<script lang="ts" setup>  
+// @ts-expect-error
 import { HighCode } from 'vue-highlight-code';
 import 'vue-highlight-code/dist/style.css';
 </script>

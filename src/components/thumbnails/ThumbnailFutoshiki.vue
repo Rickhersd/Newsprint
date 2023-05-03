@@ -52,12 +52,10 @@
 import buildFutoshikiBoard from "../../utils/futoshikiUtils/buildFutoshikiBoard"
 
   const props = defineProps<{
-    gameboard:  string;
+    gameboard:  (number | ("top" | "left" | "right" | "bottom")[] | null)[][];
   }>()
 
   const builtGameboard = buildFutoshikiBoard(props.gameboard)
-
-  console.log(builtGameboard)
 
 </script>
 

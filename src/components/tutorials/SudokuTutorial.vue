@@ -14,10 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { FutoshikiBoardType } from "../../types/FutoshikiTypes";
-  
-import { HighCode } from 'vue-highlight-code';
-import 'vue-highlight-code/dist/style.css';
+
 </script>
 
 <style scoped lang="scss">

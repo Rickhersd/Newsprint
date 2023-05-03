@@ -1,7 +1,7 @@
 import { ref, reactive, Ref } from 'vue'
 export type RegisterStack<H> = H[]
 
-export default function useHistory<GameBoard>(load?: RegisterStack<GameBoard>, initialBoard: GameBoard) {
+export default function useHistory<GameBoard>(initialBoard: GameBoard, load?: RegisterStack<GameBoard>) {
 
   const gameHistory = reactive<RegisterStack<GameBoard>>( load ?? []) as RegisterStack<GameBoard>;
   const backup = ref(<RegisterStack<GameBoard>>([])) as Ref<RegisterStack<GameBoard>>;
