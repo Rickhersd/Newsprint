@@ -12,10 +12,9 @@
 
 <script lang='ts' setup>
   import Navbar from './components/layout/Navbar.vue'
-  import Footer from './components/layout/Footer.vue'
 
   const handleBeforeEnter = () => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   } 
 
 

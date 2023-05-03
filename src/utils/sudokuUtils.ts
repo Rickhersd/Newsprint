@@ -25,7 +25,7 @@ function checkRowsInstance(gameBoard: SudokuBoardType): void {
 }
 
 function checkColsInstance(gameBoard: SudokuBoardType): void {
-  const columns = invertGameBoard(gameBoard);
+  const columns = invertGameBoard(gameBoard) as SudokuBoardType;
   checkRowsInstance(columns);
 }
 
