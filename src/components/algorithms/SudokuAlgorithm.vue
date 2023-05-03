@@ -1,9 +1,9 @@
 <template>
   <div>
   	<h1>Algoritmos del Sudoku</h1>
-  	<p>El sudoku es uno de puzzles mas faciles de crear y puede ser buen puento de pracitca par aniciante en la progrmaccion </p>
-  	<h2>Estructura de los Datos</h2>
-  	<p>Un tablero de Sudoku costa de una cuadrícula de 9x9, la cual se puede representar a través de un arreglo bidimensional con la siguiente escructura</p>
+  	<p>El sudoku es uno de puzzles mas fáciles de desarrollar y al ser uno de los maś conocidos, es el punto de partida idóneo para mejorar la logica de programacion a partir de puzzles de lógica</p>
+  	<h2>Estructura de los datos</h2>
+  	<p>Un tablero de sudoku esta formado por una cuadrícula de 9x9, la cual podemos representar mediante de un arreglo bidimensional como el que se presenta a continuación:</p>
     <HighCode
     class='code'
     :lang='"javascript"'
@@ -26,11 +26,9 @@
   [0,0,0,0,0,0,0,0,0],
 ]
  `"></HighCode> 
-  	<p>Este arreglo bidimensional solo admiten valores del 0 al 9. El 0 representa una casilla vacía y de los números del 1 al 9 con los que se puede rellenar la tablero.</p>	
-    <p></p>
-  	<p>Esta es la forma más simple de recrear un Sudoku, y es válida si se quiere crear un juego funcional. Sin embargo, tambien es muy limitante y no permite tener un control total respecto al estado de las casillas. Es por eso, que de ahora en adelante en lugar de usar números, estos se replazarán por objetos con la siguiente estructura:</p>
-  	<p>Aqui tenemos el mismo arreglo bidimensional, pero en lugar de usar valores numeros del 0 al 9, almacenamos un objeto. Cada uno de estos objetos va a contener los siguientes propiedades</p>
-    <HighCode
+  	<p>En este arreglo bidimensional se representan las nueve filas del tablero y cada una de estas, tiene nueve items que representarán las casillas. Las casillas solo se admitirán valores del 0 al 9, en donde el 0 representa una casilla vacía y los números del 1 al 9 los valores que iremos ingresando.</p>	
+  	<p>Esta es la forma más simple de recrear un Sudoku, y es válida para hacer un juego funcional. Sin embargo, tambien es muy limitante y no permite tener un control total respecto al estado de las casillas. Es por ellos, que de ahora en adelante, en lugar de números, se usarán objetos con la siguiente estructura:</p>
+   <HighCode
     class='code'
     :lang='"javascript"'
     :theme='"light"'
@@ -40,26 +38,25 @@
     :borderRadius="'0px'"
     :copy='false'
     :width="'450px'"
-    :codeValue="`const casilla = {
-  valor: 0,
-  estado: 'vacio'
+    :codeValue="`const Cell = {
+      valor: 0  // number 
+      estado: 'empty' // string
+      readonly: 'false' // boolean
 }
  `"></HighCode> 
-    <p>En este objeto, el valor podra igualmente ir del 0 al nueve, pero al tener la propiedad estado, podremos manipular con mas libertad las casillas depdiendo de su estado. Por ejemplo, si el estado es 'wrong', porque ocurrio un error en el tablero, podremos representarlo con la color rojo.</p>
-    <p>Los estados que admitira el sudoku seran tres: 'ok' cuando la casilla este correcta, 'wrong', si detecta algun error, y 'empty', en caso de que hayan casillas vacias</p>
-  	<h2>Esctructura del validador</h2>
-
+   <p>En este objeto: el valor irá del 0 al 9, y será el actual valor de casilla; el estado será un string, y podrá ser "ok", "wrong", "empty". Gracias a esta estructura, podremos manipular con más libertad las casillas dependiendo de su estado. Por ejemplo, si se esta desarrollando un juego con interfaz gráfica, el estado 'wrong' podrá indicarle a la casilla que debe pintarse de color rojo. </p>
+   <p>Nota: manejar esta estructura de tablero es mejor para el funcionamiento interno del sudoku, pero también será muy díficil crear nuevos puzzles se si van a crear los puzzles manualmente. Por ello, al final de esta guía podrás encontrar la implementacíon de una función que a partir de un arreglo bidimensional de sólo números, podemos generar un tablero con la estrutura de objetos.</p>
+  	<h2>Función validadora</h2>
+   <p>Esta funcion será la base, Aqui vamos a ejecutrar una seria de funciones . Para saber como estructurar esta funcion, debemos pensar en las reglas del sudoku para desarrollar funciones mas pequeñas:</p>
+   <p>En un principio, un sudoku debe cumplir los siguiente:</p>
   	<ul>
-  		<li>No se deben repetir ninguna columna</li>
-  		<li>No deben haber numeros repetidos en nignuna fila</li>
-  		<li>No deben haber numeros repetidos en ningun subcuadricula de 3x3</li>
-  		<li></li>
+  		<li>No deben haber números repetidos en ninguna columna</li>
+  		<li>No deben haber números repetidos en nignuna fila</li>
+  		<li>No deben haber números repetidos en ningun subcuadricula de 3x3</li>
   	</ul>
-  	<p>A partir de aqui, podemos desarrollar </p>
-
-  	<h2>Validador</h2>
-  	<p>La funcion para validar tendra la siguiente estructura. Va recibir como argumentos el arreglo. Como esta es una fucnion compleja y que internamente hace muchos casos. La primera funcion</p>
-    <HighCode
+  	<p>A partir de aquí, podemos deducir que necesitamos desarrollar tres funciones indepedientes, las cuales invocaremos en la funcion validadora. En adicion, también usaremos dos función auxiliares, una llamada SerAllCorrect() para establecer todas las casillas a "ok", y otras checkAllCorrect() para verificar si todas las casillas estan "ok".</p>
+   <p>La función quedaría así:</p>
+   <HighCode
     class='code'
     :lang='"javascript"'
     :theme='"light"'
@@ -69,20 +66,18 @@
     :borderRadius="'0px'"
     :copy='false'
     :width="'450px'"
-    :codeValue="`const casilla = {
-  valor: 0,
-  estado: 'vacio'
+    :codeValue="`function validateSudoku(tablero){
+   setAllCorrect();
+
+   checkColumns();
+   checkRows();
+   checkBoxes();
+
+   return checkAllCorrect();
 }
  `"></HighCode>
-  	<ul>
-  		<li>El primer paso es establer el estado de todas las casillas a 'ok'</li>
-  		<li>Luego se procede a validar todas las filas</li>
-  		<li>Luego se validan todas las columnas</li>
-  		<li>No deben haber numeros repetidos en ningun subcuadricula de 3x3</li>
-  		<li>Se verfica el estado de las casillas</li>
-  	</ul>
-  	<p>La logica de esta estructura es la siguiente: cuando se invoca esta funcion, se asume que todo el puzzle esta correcto, por lo que se establecen todas casillas en 'ok'. Luego validan los aspectos del puzzles. Estas funciones no retornan nada, la idea de estas es que si encuentran algun error, estableeran el valor de las casillas en wrong. Por ultimo, cuando se halla verificado todo. La ultima funcion invocara verificara, solo en el caso de que todas las celdas continuen siendo 0k, la funciona retornara True, de los contrario devolvera false.</p>
-  	<p>La razon de establecer todo a ok desde un inicio es porque las funciones de validacion solo tendran la capacidad de establecer el estado a wrong, y a ok. Esto para que ninguna funcion pueda alteral la respuesta que dio otra funcion validora. Pordria darse </p>
+  	<h3>¿Por qué se asume todo a correcto al inicio?</h3>    
+  	<p>La lógica detrás de esto es que el algoritmo irá ejecuntando las funciones checker en orden, y estas se encargarán de validar los diferentes aspectos del puzzles, y en caso de encontrar aĺgún error en alguna casilla, cambiará el estado de ésta a "wrong". Al final, la última función checkAllCorrect() verificará si todas las casillas continuan "ok" o no, y dependiendo del resultado, retornará un boolean que nos indicará si el tablero está correcto o no.</p>
   	<h3>Verificar filas</h3>
   	<p>Esta es la funcion mas simple de todas. Solo debemos recorrer cada arreglo que simula ser una fila, y ir verificando uno de estos valores</p>
     <HighCode
@@ -95,10 +90,30 @@
     :borderRadius="'0px'"
     :copy='false'
     :width="'450px'"
-    :codeValue="`const casilla = {
-  valor: 0,
-  estado: 'vacio'
+    :codeValue="`function countElementsRow(row: GameBoardRow<GameBoardCell<number>>): {[key: string | number]: number } {
+  const result: { [key: string | number]: number } = {};
+  row.forEach((cell) => {
+    result[cell.value] = (result[cell.value] || 0) + 1;
+  });
+  return result;
 }
+
+export function invertGameBoard(gameBoard: GameBoard<GameBoardCell<any>>): GameBoard<GameBoardCell<any>> {
+  const rows = gameBoard.length;
+  const columns = gameBoard[0].length;
+  const invertedArray = [];
+
+  for (let j = 0; j < columns; j++) {
+    const invertedRow = [];
+    for (let i = 0; i < rows; i++) {
+      invertedRow.push(gameBoard[i][j]);
+    }
+    invertedArray.push(invertedRow);
+  }
+
+  return invertedArray;
+}
+
  `"></HighCode>
 
   	<h3>Verificar Columnas</h3>

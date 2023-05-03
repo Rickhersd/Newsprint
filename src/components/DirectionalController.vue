@@ -64,7 +64,7 @@ const emits = defineEmits<{
 
     &__corner{
       background-color: var(--main-bg);
-      border-radius: 0.5rem;
+      border-radius: 0.3rem;
     }
 
     &__up{

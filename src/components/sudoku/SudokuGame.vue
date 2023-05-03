@@ -15,8 +15,8 @@
     <GameTimer 
       :initialTime="currentTime"
       :isCompleted="isCompleted"
-      @onTimerEnd="handleTimerEnd" />
-    <SudokuBoard :key='gameHistory.moves'> 
+      @onTimer="handleTime" />
+    <SudokuBoard> 
       <template #toolbar>
         <ToolbarAsideBtn :tooltipText="'Algoritmos'" @click.stop="() => {
           drawer = !drawer
@@ -30,45 +30,49 @@
         }">
           <v-icon size='large' icon="mdi-school"></v-icon>
         </ToolbarAsideBtn>
-        <ToolbarAsideBtn :tooltipText="'Reinicar'" >
+        <ToolbarAsideBtn :tooltipText="'Reinicar'" @click.stop="() => {
+          currentTime = 0;
+          gameHistory.reset();
+        }" >
           <v-icon size='large' icon="mdi-restart"></v-icon>
         </ToolbarAsideBtn>
-        <ToolbarAsideBtn :tooltipText="'Exportar en pdf'">
+        <!-- <ToolbarAsideBtn :tooltipText="'Exportar'">
           <v-icon size='large' icon="mdi-file-export"></v-icon>
-        </ToolbarAsideBtn>
-        <ToolbarAsideBtn :tooltipText="'Mostrar Errores'" @click.stop="showErrors = !showErrors">
+        </ToolbarAsideBtn> -->
+        <ToolbarAsideBtn :tooltipText="'Errores'" @click.stop="showErrors = !showErrors">
           <v-icon size='large' 
             :icon="showErrors? 'mdi-eye-remove' : 'mdi-eye-off'">   
           </v-icon>
         </ToolbarAsideBtn>
       </template>
-      <SudokuRow v-for="(row, rowIndex) in gameHistory.gameHistory[gameHistory.gameHistory.length - 1]" :key="rowIndex">
+      <SudokuRow v-for="(row, rowIndex) in gameHistory.getLastRegister()" :key="rowIndex">
         <SudokuCell 
           v-for="(cell, cellIndex) in row" 
           :key="cellIndex" 
           :cellData="cell"
-          :selectedCell="(rowIndex == selectedCell.rowIndex && cellIndex == selectedCell.cellIndex)"
+          :selectedCell="{y: selectedCell.rowIndex, x: selectedCell.cellIndex}"
+          :auxiliarCell="(rowIndex == selectedCell.rowIndex || cellIndex == selectedCell.cellIndex)"
           :rowIndex="rowIndex"
           :cellIndex="cellIndex"
           :showErrors="showErrors"
           :activeValue="activeValue"
           @onSelect="changeSelectedCell"
-          @onEdit="editBoard"
         />
       </SudokuRow>
     </SudokuBoard>
-    <SudokuControls
-      :activeValue="activeValue"
-      :toggleActive="toggleActive"
-      :handleRestart="() => gameHistory.reset()"
-      :handleBack="() => gameHistory.back()"
-      :handleNext="() => gameHistory.next()"
-    >
-    <template #directionalController>
-      <DirectionalController
-        @onMove="moveSelectedCell"
-      />
-  </template>
+    <SudokuControls>
+      <template #directionalController>
+        <DirectionalController
+          @onMove="moveSelectedCell"
+        />
+      </template>
+      <template #numeralController>
+        <SudokuNumberSelector 
+          :activeValue="activeValue" 
+          :toggleActive="toggleActive" 
+          @onEdit="(newValue) => editBoard({rowIndex: selectedCell.rowIndex, cellIndex: selectedCell.cellIndex}, newValue)"
+        />
+      </template>
     </SudokuControls>
   </v-main>
 </div>
@@ -78,7 +82,7 @@
 
 import { SudokuBoardType, SudokuCellType, SudokuValidCellValues } from "../../types/SudokuTypes";
 import { PositionType } from "../../types/types"
-import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import countNInBoard from "../../utils/countNInBoard";
 import GameTimer from "../GameTimer.vue";
 import SudokuBoard from "./SudokuBoard.vue";
@@ -87,7 +91,8 @@ import SudokuCell from "./SudokuCell.vue";
 import SudokuControls from "./SudokuToolbar.vue";
 import DrawerContentWrapper from "../DrawerContentWrapper.vue"
 import ToolbarAsideBtn from "../ToolbarAsideBtn.vue"
-import { onUpdated, ref, onBeforeMount, watch } from "vue";
+import SudokuNumberSelector from "./SudokuNumberSelector.vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
 import useHistory from "../../ts/useHistory";
 import buildGameBoard from "../../utils/sudokuUtils/buildSudokuBoard";
 import checkSudoku from "../../utils/sudokuUtils";
@@ -97,57 +102,40 @@ import { sudokuData } from "../../data/SudokuData";
 import DirectionalController from "../DirectionalController.vue"
 
 const route = useRoute()
-const initialBoard: SudokuValidCellValues[][] = sudokuData[route.params.id].initialBoard
-const gameHistory = useHistory<SudokuBoardType>([buildGameBoard(initialBoard)]);
-const selectedCell = ref<PositionType >({rowIndex: 0, cellIndex: 0});
-const activeValue = ref<SudokuValidCellValues>(0);
+const sudokuId = parseInt(route.params.id as string) - 1;
+const initialBoard: SudokuValidCellValues[][] = sudokuData[sudokuId].initialBoard as SudokuValidCellValues[][];
 const isCompleted = ref<boolean>(false);
 const currentTime = ref<number>(0);
+const gameHistory = useHistory<SudokuBoardType>([setGame()], buildGameBoard(initialBoard));
+const selectedCell = ref<PositionType >({rowIndex: 0, cellIndex: 0});
+const activeValue = ref<SudokuValidCellValues>(0);
 const moves = ref<number>(0);
-const drawer = ref(null);
+const drawer = ref<boolean>(false);
 const showErrors = ref<boolean>(false);
 const drawerContent = ref<'algorithm'|'tutorial' | null>(null)
 
-
-const editBoard = (position: PositionType, newValue: number): void => {
+const editBoard = (position: PositionType, newValue:SudokuValidCellValues): void => {
+  if(gameHistory.getLastRegister()[position.rowIndex][position.cellIndex].readOnly == true) return;
   const newRegister = gameHistory.getLastRegister().map(row => [...row]);
-  newRegister[position.rowIndex][position.cellIndex].value = newValue;
+  newRegister[position.rowIndex][position.cellIndex] = {
+    value: newValue,
+    state: 'correct',
+    readOnly: false
+  };
   gameHistory.register(newRegister);
   validateGame();
-}
-
-const changeSelectedCell = (rowIndex, cellIndex) => {
-  selectedCell.value = {rowIndex, cellIndex}
-  console.log(selectedCell.value)
-}
-
-const handleTimerEnd = (time: number):void => {
-  currentTime.value = time;
-}
-
-onBeforeRouteUpdate(async (to, from) => {
-  // only fetch the user if the id changed as maybe only the query or the hash changed
-  console.log(to.params.id)
-
-  if (to.params.id !== from.params.id) {
-    console.log(to.params.id)
   }
-})
+
+const changeSelectedCell = (rowIndex: number, cellIndex: number): void => {
+  selectedCell.value = {rowIndex, cellIndex}
+}
 
 const moveSelectedCell = (y: -1 | 0 | 1, x: -1 | 0 | 1) => {
-
   const clamp = (x:number, min:number, max:number) => Math.max( min, Math.min(x, max));
-
   selectedCell.value = {
     rowIndex: clamp(selectedCell.value.rowIndex + y, 0, 8),
     cellIndex: clamp(selectedCell.value.cellIndex + x, 0, 8)
   }
-
-  console.log(selectedCell.value)
-}
-
-function getBoard(){
- 
 }
 
 watch(
@@ -156,13 +144,77 @@ watch(
     
 })
 
+const handleTime = (time: number) => {
+  console.log(currentTime.value)
+  currentTime.value = time
+}
 
-onBeforeMount(() =>{
-  getBoard()
+const handleKeyDown = (e: KeyboardEvent) => {
+  const keyCode = e.code;
+  const numericCode = e.code.match(/\d+/)?.[0];
 
+  if (numericCode){
+    if (numericCode >= '1' && numericCode <= '9') {
+      editBoard({
+          rowIndex: selectedCell.value.rowIndex, 
+          cellIndex: selectedCell.value.cellIndex
+        }, 
+        parseInt(numericCode, 10) as SudokuValidCellValues
+      );
+    }
+  }
+  
+  if (keyCode === 'ArrowLeft') moveSelectedCell( 0, -1) //left 
+  if (keyCode === 'ArrowUp') moveSelectedCell(-1, 0) //up 
+  if (keyCode === 'ArrowRight') moveSelectedCell(0, 1) //right 
+  if (keyCode === 'ArrowDown') moveSelectedCell( 1, 0) //down
+
+  function isNumericKey(event: KeyboardEvent): boolean {
+    const regex = /^[1-9]$/;
+    return regex.test(event.code);
+  }
+}
+
+function setGame(){
+  const localStr = localStorage.getItem(`sudoku-${sudokuId}`)
+  if (!localStr) return populateStorage();
+
+  const gameData = JSON.parse(localStr)
+  currentTime.value = gameData.currentTime;
+  isCompleted.value = gameData.isCompleted;
+  return gameData.gameBoard;  
+}
+
+
+function populateStorage(){
+  const gameBoard = buildGameBoard(initialBoard)
+  const data =  {
+    gameBoard: gameBoard,
+    currentTime: 0,
+    isCompleted: false,
+  }
+
+  localStorage.setItem(`sudoku-${sudokuId}`, JSON.stringify(data));
+  return gameBoard;
+}
+
+function saveStorage(){
+  const data =  {
+    gameBoard: gameHistory.getLastRegister(),
+    currentTime: currentTime.value,
+    isCompleted: isCompleted.value,
+  }  
+  localStorage.setItem(`sudoku-${sudokuId}`, JSON.stringify(data));  
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
 })
 
-// const change 
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+  saveStorage()
+}) 
 
 const toggleActive = (activeTarget: SudokuValidCellValues):void => {
   countNInBoard(activeTarget, gameHistory.getLastRegister()) >= 9
@@ -170,36 +222,25 @@ const toggleActive = (activeTarget: SudokuValidCellValues):void => {
     : (activeValue.value = activeTarget);
 }
 
-const startGame = () => {
-
-}
-
 const stopGame =() => {
   console.log('ganaste')
 }
 
-onUpdated(() => {
-  
-  })
-
 function validateGame(){
-  console.log('hola')
-  const isValid:boolean = checkSudoku(gameHistory.gameHistory[gameHistory.gameHistory.length - 1]);
-  if(isValid){
-    stopGame();
-  }
+  const isValid:boolean = checkSudoku(gameHistory.getLastRegister());
+  if(isValid) stopGame(); 
 }
 
 </script>
 
 <style scoped>
-
 .sudoku_container {
   width: 100%;
-  padding: 2.5rem;
-  gap: 2rem;
+  padding: 2rem;
+  min-height: 100vh;
+  gap: 1rem;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
 }
@@ -229,7 +270,7 @@ function validateGame(){
   .container {
     justify-content: flex-start;
     gap: 24px;
-  }
+  } 
   .difficulty {
     margin-top: 20px;
     font-size: 10px;
@@ -238,4 +279,11 @@ function validateGame(){
     height: 24px;
   }
 }
+
+@media only screen and (min-height: 700px) {
+  .sudoku_container {
+  gap: 2.5rem;
+}
+}
+
 </style>

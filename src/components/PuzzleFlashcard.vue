@@ -10,7 +10,7 @@
 				{'flashcard__disabled': comingSoon }
 			"
 	    >
-	    <div :style="comingSoon && {filter: 'contrast(0.7)'}"
+	    <div :style="comingSoon? {filter: 'contrast(0.7)'} : {}"
 	    class="flashcard__content-cont">
 	  		<h3 class='flashcard__title'>{{title}}</h3>
 	  		<div class='flashcard__thumbnailSudoku'>
@@ -43,12 +43,11 @@
 </template>
 
 <script lang='ts' setup>
-	import ThumbnailSudoku from './thumbnailSudoku.vue'
-	import Difficulty from '../types/types'
+	import { Difficulty } from '../types/types'
 
 	interface Props {
 		title?: string,
-		difficulty?: difficulty,
+		difficulty?: Difficulty,
 		subtitle?:  string, 
 		comingSoon?: boolean,
 		to?: string,
@@ -56,24 +55,20 @@
 
 	withDefaults(defineProps<Props>(),{
 		title: 'flashcard',
-		difficulty: null,
+		difficulty: undefined,
 		subtitle:  'null', 
 		comingSoon: false,
-		to: null,
+		to: undefined,
 	})
-
 </script>
 
 <style lang="scss">
 
 	.flashcard{
-
-		// height: auto;
+		
 		&:active, &:visited, &:link {
 			text-decoration: none;
 		}
-
-	
 
 		&__title{
 			font-size: 1.25rem;

@@ -12,13 +12,13 @@
   }>() 
 
   const emits = defineEmits<{
-    (e: 'onTimerEnd', time: number):void,
+    (e: 'onTimer', time: number):void,
   }>()
 
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    const formattedMinutes = minutes.toString().padStart(1, '0');
+    const formattedMinutes = minutes.toString().padStart(2, '0');
     const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
     return `${formattedMinutes}:${formattedSeconds}`;
   }
@@ -29,12 +29,13 @@
   const startTimer = () => {
     timerId = setInterval(() => {
       currentTime.value++;
+      emits('onTimer', currentTime.value)
     }, 1000);
   };
 
   const stopTimer = () => {
     clearInterval(timerId as ReturnType<typeof setInterval>);
-    emits('onTimerEnd', currentTime.value );
+    
   };
 
   // watchEffect(onInvalidate => {

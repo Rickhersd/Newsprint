@@ -1,10 +1,13 @@
 <template>
-		<v-btn block class="toolbar-aside-btn" :rounded="0" size="x-large">
+		<button block class="toolbar-aside-btn" :rounded="0" size="x-large">
 			<v-tooltip activator='parent'>
 				{{tooltipText}}
 			</v-tooltip>
 			<slot></slot>
-    </v-btn>
+			<div class="toolbar-aside-btn__text">
+			{{tooltipText}}
+			</div>
+    </button>
 </template>
 
 <script lang="ts" setup>
@@ -20,14 +23,25 @@
 	.toolbar-aside-btn{
 		display: flex;
 		align-items: center;
+		flex-direction: column;
 		justify-content: center;
 		width: 100%;
 		height: 100% !important;
-		background-color: var(--vue-mint);
+		background-color: white;
 		transition: all 0.3s ease;
 		border-radius: 0px;
 		box-shadow: none;
-		padding: 0.75rem 0rem;
+		padding: 0.25rem 0rem;
+
+		& i:before{
+			color:var(--vue-mint);
+		}
+
+		&__text{
+			font-size: 10px;
+			color: var(--vue-blue);
+			font-weight: 700;
+		}
 	}
 
 @media only screen and (min-width: 640px) {
@@ -48,8 +62,15 @@
 			scale: 1.05;
 			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 		}
-	}
 
+		& i:before{
+			color: white;
+		}
+
+		&__text{
+			display: none;
+		}
+	}
 }
 
 </style>

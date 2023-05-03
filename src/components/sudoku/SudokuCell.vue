@@ -3,22 +3,23 @@
     class="sudoku_cell"
     :class="{
       'sudoku_cell-wrong': (cellData.state === 'wrong' && showErrors === true ),
-      'sudoku_cell-selected': selectedCell}"
+      'sudoku_cell-selected': ( rowIndex == selectedCell.y && cellIndex == selectedCell.x),
+      'sudoku_cell-auxiliar': ( !(rowIndex == selectedCell.y && cellIndex == selectedCell.x) && auxiliarCell)
+    }"
     :disabled="cellData.readOnly"
     @click="handleClick"
-    @keydown="handleKeyDown"
-  >
+    >
     <h1>{{ cellData.value === 0 ? '' : cellData.value }}</h1>
   </button>
 </template>
 
 <script lang="ts" setup>
   import { SudokuCellType, SudokuValidCellValues } from '../../types/SudokuTypes';
-  import { PositionType } from '../../types/types'
 
   const props = defineProps<{
     cellData: SudokuCellType,
-    selectedCell: boolean; 
+    selectedCell: {x: number, y: number};
+    auxiliarCell: boolean; 
     showErrors: boolean,
     cellIndex: number,
     rowIndex: number,
@@ -26,21 +27,11 @@
   }>()
 
   const emits = defineEmits<{
-    (e: 'onEdit', position: PositionType, newValue: number):void
     (e: 'onSelect', rowIndex: number, cellIndex: number ):void
   }>()
 
   const handleClick = () => {
-    emits('onEdit', {rowIndex: props.rowIndex, cellIndex: props.cellIndex}, props.activeValue)
     emits('onSelect', props.rowIndex, props.cellIndex);
-  }
-
-  const handleKeyDown = (event) => {
-    const keyCode = event.keyCode || event.which;
-    const value = String.fromCharCode(keyCode);
-    if (value >= '1' && value <= '9') {
-      emits('onEdit', {rowIndex: props.rowIndex, cellIndex: props.cellIndex}, parseInt(value, 10));
-    }
   }
 
 </script>
@@ -49,8 +40,9 @@
   .sudoku_cell {
     height: 100%;
     width: 100%;
+    background-color: var(--main-bg);
     border-right: 1px solid var(--light-border);
-    box-sizing: content-box;
+    box-sizing: brder-box;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -59,39 +51,47 @@
       border-right: 2px solid var(--middle-border);
     }
 
-    &-wrong{
-      background-color: rgb(236, 141, 141);
+    &:last-child {
+      border-right: 2px solid transparent;
     }
 
     &-selected{
-      filter: grayscale(50%);
-      background-color: red;
+      filter: contrast(0.7);
       cursor: pointer;
       z-index: 10;
-      background-color: #ededed;
       border-color: #ededed;
-      outline: 2px solid darkslategray;
-
+      
     }
 
-    &:hover {
-      cursor: pointer;
-      z-index: 10;
-      background-color: #ededed;
-      border-color: #ededed;
-      outline: 2px solid darkslategray;
+    &-auxiliar{
+      filter: contrast(0.9);
+    }
+
+    &:focus {
+      outline: none;
     }
 
     h1 {
-      font-weight: 200;
+      font-weight: 500;
       font-size: 18px;
       color: var(--font-gray);
+      transition: color 0.3s ease;
       
     }
 
     &:disabled h1 {
       font-weight: 800;
       color: var(--font-darkgray);
+    }
+
+    &-wrong h1{
+      // background-color: rgb(236, 141, 141);
+      color: rgb(236, 90, 90);
+    }
+
+    &-wrong:disabled h1{
+      // background-color: rgb(236, 141, 141);
+      color: rgb(236, 50, 50);
     }
   }
 

@@ -16,10 +16,10 @@
     </v-app-bar-title>
     <v-spacer></v-spacer>
     <router-link class='nav-link' to='/'>Inicio</router-link>
-    <span><v-icon icon='mdi-slash-forward' /></span>
+    <span class='nav-divider' ><v-icon  icon='mdi-slash-forward' /></span>
     <router-link class='nav-link' to='/sudokus'>Sudokus</router-link>
     <template v-slot:append>
-      <v-btn icon='mdi-menu'
+      <v-btn icon='mdi-menu' class='nav-menu-btn'
         @click='drawer = !drawer'
       ></v-btn>
     </template>
@@ -40,9 +40,7 @@
 	import { ref } from 'vue';
 	import PuzzleCodes from '../PuzzleCodes.vue';
 
-
-	const drawer = ref<boolean>(false)
-
+	const drawer = ref<boolean>(false);
 
 </script>
 
@@ -54,6 +52,26 @@
 		margin: 0px 0.75rem;
 		text-decoration: none;
 		font-size: 18px;
+		font-weight: 500;
+		display: none;
+	}
+
+	.nav-divider{
+		display: none;
+	}
+
+	@media only screen and (min-width: 600px){
+		.nav-link{
+			display: block;
+		}		
+
+		.nav-divider{
+			display: block;
+		}
+
+		.nav-menu-btn{
+			display: none !important;
+		}
 	}
 
 </style>

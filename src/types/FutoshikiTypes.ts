@@ -1,4 +1,4 @@
-import { GameBoardCell } from "./types";
+import { GameBoardCell, GameBoardRow } from "./types";
 
 export type ComparisonType = {
   type: "top" | "left" | "right" | "bottom";

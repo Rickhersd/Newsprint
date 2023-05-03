@@ -1,43 +1,29 @@
 <template>
   <div class="sudoku-toolbar">
  
-     <!--  <div class="sudoku-toolbar__tools-history">
+     <!-- <div class="sudoku-toolbar__tools-history">
         <button class="sudoku-toolbar__tools-btn " @click="handleBack">
           <v-icon icon="mdi-arrow-u-left-top"></v-icon>
         </button>
         <button class="sudoku-toolbar__tools-btn " @click="handleNext">
           <v-icon icon="mdi-arrow-u-right-top"></v-icon>
         </button>
-      </div> -->
-      <div class="sudoku-toolbar__directional-controller">
+      </div> 
+ -->      <div class="sudoku-toolbar__directional-controller">
         <slot name='directionalController' />
       </div>
       <div class="sudoku-toolbar__numeral-controller">
-      <SudokuNumberSelector 
-      :activeValue="activeValue" 
-      :toggleActive="toggleActive" />
+        <slot name='numeralController' />
     </div>
 </div>
 </template>
 
-<script lang="ts" setup>
-  import SudokuNumberSelector from "./SudokuNumberSelector.vue";
-  import { SudokuValidCellValues } from "../../types/SudokuTypes";
-  import RestartBtn from "../RestartBtn.vue";
-  import DirectionalController from "../DirectionalController.vue"
-
-  defineProps<{
-    activeValue: SudokuValidCellValues,
-    toggleActive: (activeTarget:SudokuValidCellValues) => void,
-  }>()
-  
-</script>
+<script lang="ts" setup></script>
 
 <style scoped lang="scss">
 
 .sudoku-toolbar {
   width: 100%;
-  max-width: 300px;
   font-weight: 400;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

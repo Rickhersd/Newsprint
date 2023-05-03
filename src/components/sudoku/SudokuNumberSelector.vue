@@ -4,7 +4,7 @@
       class="number-selector__button"
       v-for="number in numbers"
       :key="number"
-      @click="() => toggleActive(number)"
+      @click="emits('onEdit', number)"
     >
       <p v-if="activeValue === number" class="number-selector_button-selected">
         {{ numbers[number - 1] }}
@@ -24,6 +24,10 @@
     toggleActive: (activeTarget:SudokuValidCellValues) => void,
   }>()
 
+  const emits = defineEmits<{
+    (e: 'onEdit', newValue: SudokuValidCellValues):void
+  }>()
+
 </script>
 
 <style scoped lang="scss">
@@ -37,7 +41,7 @@
   grid-row-end: 4;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
-  background-color: var(--i-secundary-color);
+  background-color: var(--vue-mint);
   border-radius: 1.5rem;
   aspect-ratio: 1/1;
   overflow: hidden;
@@ -47,13 +51,12 @@
     height: 100%;
     aspect-ratio: 1/1;
     border: none;
-    color: black;
     font-size: 20px;
     font-weight: 500;
     cursor: pointer;
 
-    :hover {
-      background-color: darkgray;
+    & p{
+      color: var(--vue-blue);
     }
 
     &-seleted{

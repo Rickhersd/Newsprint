@@ -1,14 +1,13 @@
-import { FutoshikiBoardType, FutoshikiRowType } from "../../types/FutoshikiTypes";
+import { FutoshikiBoardType, FutoshikiCellType} from "../../types/FutoshikiTypes";
 
-const buildFutoshikiBoard = (numericFutoshikiBoard: (("top" | "left" | "right" | "bottom")[]| null)[][]):FutoshikiBoardType => {
+const buildFutoshikiBoard = (numericFutoshikiBoard: (number | ("top" | "left" | "right" | "bottom")[]| null)[][]):FutoshikiBoardType => {
   const futoshikiBoard:FutoshikiBoardType = [];
 
   numericFutoshikiBoard.forEach(row => {
-    const futoshikiRow: FutoshikiRowType = [];
+    const futoshikiRow: FutoshikiCellType[] = [];
     row.forEach(futoshikiComparisons => {
 
       if(typeof futoshikiComparisons === 'number') {
-        console.log('gola')
         futoshikiRow.push({
           value: futoshikiComparisons,
           state: 'correct',
@@ -17,7 +16,6 @@ const buildFutoshikiBoard = (numericFutoshikiBoard: (("top" | "left" | "right" |
         return  
       }
 
-      
       futoshikiRow.push({
         value: 0,
         state: 'correct',

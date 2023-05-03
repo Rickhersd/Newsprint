@@ -7,7 +7,6 @@
         Sudokus
         </h1>
       </div>
-      
       <p>Los Sudokus son un juego de lógica y matematicas de origen japonés, cuyo objetivo consiste en rellenar una cuadrícula de 9x9 con numeros del 1 al 9. A su vez, esta cuadrícula tambien se subidivie en nueve cuadriculas mas de 3x3 
       </p>
       <p>Para ganar, en ninguna fila, columna o subcuadrícula de 3x3 deberán haber números repetidos</p>
@@ -44,18 +43,15 @@
 <script lang='ts' setup>
 
   import PuzzleFlashcard from '../components/PuzzleFlashcard.vue'
-  import ThumbnailSudoku from '../components/ThumbnailSudoku.vue'
+  import ThumbnailSudoku from '../components/thumbnails/ThumbnailSudoku.vue'
   import { sudokuData } from '../data/SudokuData';
   import Grid from '../components/Grid.vue'
   import { ref, watch } from 'vue'; 
 
-
   const filter = ref<'easy' | 'hard' | 'normal' | 'expert'>('easy');
-  
   const sudokuList = ref(sudokuData)
 
   watch(filter, () => {
-
     sudokuList.value = !filter.value.length 
       ? sudokuData 
       : (() => {

@@ -38,15 +38,15 @@
         ></ThumbnailHitori>
       </PuzzleFlashcard>
       <PuzzleFlashcard 
-          :title='"Futoshiki"'
-          
-          :comingSoon='true'
-                 >
+        :title='"Futoshiki"'
+        :comingSoon='true'
+        >
           <ThumbnailFutoshiki
             :gameboard='futoshikiBoard'
         ></ThumbnailFutoshiki>
       </PuzzleFlashcard>
   </Grid>
+
   </div>
 </template>
 
@@ -117,6 +117,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0rem 1rem;
+  margin-bottom: 8rem;
 
   &__header{
 
@@ -152,8 +153,6 @@
   }
 
   .home{
-  margin: auto;
-  margin-top: 10rem;
   width:100%;
   display: flex;
   flex-direction: column;

@@ -28,7 +28,8 @@
     display: grid;
     z-index: 100;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    background-color: var(--vue-mint);
+    background-color: white;
+    border-top: 1px solid grey;
     left: 0px;
     bottom: 0px;
 
@@ -66,6 +67,7 @@ h4:nth-child(3n) {
       width: 3rem;
       height: auto;
       display: flex;
+      border:none;
       flex-direction: column;
       top: 0px;
       bottom: auto;
